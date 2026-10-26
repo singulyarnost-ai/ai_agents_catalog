@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Каталог ИИ-агентов — СИНГУЛЯРНОСТЬ</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- HERO SECTION СО ЗВЁЗДАМИ И ПРОЗРАЧНОЙ ГАЛАКТИКОЙ -->
+    <section class="hero">
+        <canvas id="particles-canvas"></canvas>
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge">Экосистема решений</div>
+                <h1>Каталог прикладных ИИ-агентов СИНГУЛЯРНОСТЬ</h1>
+                <p class="hero-subtitle">Мы упорядочиваем хаос бизнес-процессов с помощью цифровых сотрудников.</p>
+                <div class="hero-roi-box">
+                    <strong>Критерий успеха:</strong> подтверждённый экономический эффект и измеримый ROI в деньгах и времени.
+                </div>
+                <div class="hero-actions">
+                    <a href="#catalog" class="btn btn-primary">Перейти к каталогу</a>
+                    <a href="https://singulyarnost.ai/#process" target="_blank" class="btn btn-secondary">Как мы внедряем</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img src="{{ url_for('static', filename='img/hero.png') }}" alt="Сингулярность Галактика" class="hero-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- КАТАЛОГ С ФИЛЬТРАМИ И СЕТКОЙ ИЗ 12 АГЕНТОВ -->
+    <section id="catalog" class="catalog-section">
+        <div class="container">
+            <div class="catalog-header">
+                <h2>Витрина готовых ИИ-агентов</h2>
+                <p>Выберите категорию задач или найдите нужного специалиста по ключевым словам</p>
+            </div>
+
+            <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
+            <div class="controls-panel">
+                <div class="filter-tabs">
+                    <button class="tab-btn active" data-category="all">Все агенты</button>
+                    <button class="tab-btn" data-category="Продажи и CRM">Продажи и CRM</button>
+                    <button class="tab-btn" data-category="Клиентский сервис и HR">Клиентский сервис и HR</button>
+                    <button class="tab-btn" data-category="Аналитика и Данные">Аналитика и Данные</button>
+                    <button class="tab-btn" data-category="Операции и Производство">Операции и Производство</button>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Поиск по названию, тегам или задачам...">
+                    <span id="counter" class="agents-counter">Показано агентов: 12 из 12</span>
+                </div>
+            </div>
+
+            <!-- МАТРИЦА КАРТОЧЕК -->
+            <div class="agents-grid" id="agentsGrid">
+                {% for agent in agents %}
+                <div class="agent-card" 
+                     data-id="{{ agent.id }}"
+                     data-category="{{ agent.category }}"
+                     data-tags="{{ agent.tags | join(' ') }}"
+                     data-title="{{ agent.title }}"
+                     data-short="{{ agent.short_desc }}">
+                    <div class="card-top">
+                        <span class="badge">{{ agent.badge }}</span>
+                        <span class="category-label">{{ agent.category }}</span>
+                    </div>
+                    <h3>{{ agent.title }}</h3>
+                    <p class="agent-desc">{{ agent.short_desc }}</p>
+                    
+                    <div class="agent-tags">
+                        {% for tag in agent.tags %}
+                        <span class="tag">#{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="economic-effect">
+                        <div class="effect-label">Бизнес-эффект:</div>
+                        <div class="effect-val">{{ agent.economic_effect }}</div>
+                    </div>
+
+                    <button class="btn btn-card-details" data-agent-id="{{ agent.id }}">
+                        Спецификация и расчет
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div id="noResults" class="no-results" style="display: none;">
+                По вашему запросу ничего не найдено. Попробуйте сбросить фильтры.
+            </div>
+        </div>
+    </section>
+
+    <!-- ПОДВАЛ -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">Консалтинговая ИИ-студия СИНГУЛЯРНОСТЬ</div>
+            <div class="footer-contacts">info@singulyarnost.ai &emsp; +7-904-382-69-61</div>
+            <div class="footer-slogan">«Мы упорядочили хаос!»</div>
+        </div>
+    </footer>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЕТАЛЕЙ АГЕНТА -->
+    <div id="agentModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose" title="Закрыть">&times;</span>
+            <div class="modal-header">
+                <span class="badge" id="modalBadge"></span>
+                <span class="category-label" id="modalCategory"></span>
+                <h3 id="modalTitle"></h3>
+            </div>
+            <div class="modal-body">
+                <p id="modalDesc" class="modal-text"></p>
+                
+                <div class="benefit-box">
+                    <div class="benefit-title">Выгода для бизнеса (Деньги и Время):</div>
+                    <div id="modalBenefits" class="benefit-content"></div>
+                </div>
+
+                <div class="features-block">
+                    <h4>Ключевой функционал:</h4>
+                    <ul id="modalFeatures"></ul>
+                </div>
+
+                <div class="payback-row">
+                    <strong>Ориентировочный срок окупаемости:</strong> <span id="modalPayback"></span>
+                </div>
+
+                <div class="cta-box">
+                    <p id="modalCtaText"></p>
+                    <div class="modal-actions-group">
+                        <a href="https://singulyarnost.ai/#form" target="_blank" class="btn btn-cta-magnetic">
+                            <span class="cta-pulse-dot"></span>
+                            Запросить внедрение
+                        </a>
+                        <button type="button" class="btn btn-back-list" id="modalBackBtn">
+                            Возврат в список
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Внедрение исходных данных в JS -->
+    <script id="agentsData" type="application/json">
+        {{ agents | tojson | safe }}
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
